@@ -1,8 +1,11 @@
 import "server-only";
 import { cache } from "react";
+import { defaultApproachPage } from "./approach-page";
+import { defaultExpertisePage } from "./expertise-page";
 import { orderBriefs, toEngagement } from "./map-case-studies";
 import { toListing, toPractitioner, toProfile } from "./map-people";
 import { toResource } from "./map-resources";
+import { mergePageCopy } from "./page-copy";
 import { loadQuery } from "./source";
 import type { RawCaseStudy, RawPerson, RawResource } from "./raw";
 import type { Resource } from "./types";
@@ -23,3 +26,9 @@ export const getPractitioners = cache(async () => (await rawPeople()).map(toPrac
 
 export const getResources = cache(async () =>
   (await loadQuery<RawResource[]>("resources")).map(toResource).filter((item): item is Resource => item !== null));
+
+export const getExpertisePage = cache(async () =>
+  mergePageCopy(defaultExpertisePage, await loadQuery("expertisePage")));
+
+export const getApproachPage = cache(async () =>
+  mergePageCopy(defaultApproachPage, await loadQuery("approachPage")));

@@ -8,4 +8,6 @@ export const structure: StructureResolver = (S, context) =>
       orderableDocumentListDeskItem({ type: "caseStudy", title: "Case studies", S, context }),
       orderableDocumentListDeskItem({ type: "person", title: "People", S, context }),
       S.documentTypeListItem("resource").title("Resources"),
+      S.listItem().singleton("expertisePage"),
+      S.listItem().singleton("approachPage"),
     ]);

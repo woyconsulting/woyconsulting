@@ -21,6 +21,19 @@ test("a correctly signed publish expires the CMS cache immediately", async () =>
   assert.deepEqual(calls, [["sanity", { expire: 0 }]]);
 });
 
+test("recent signed retries are accepted, while stale and future signatures are refused", async () => {
+  for (const minutes of [-6, 6]) {
+    const signature = await webhook.encodeSignatureHeader(body, Date.now() + minutes * 60_000, secret);
+    const response = await route.POST(request({ [webhook.SIGNATURE_HEADER_NAME]: signature }));
+    assert.equal(response.status, 401);
+  }
+  assert.deepEqual(calls, []);
+
+  const retrySignature = await webhook.encodeSignatureHeader(body, Date.now() - 2 * 60_000, secret);
+  assert.equal((await route.POST(request({ [webhook.SIGNATURE_HEADER_NAME]: retrySignature }))).status, 200);
+  assert.deepEqual(calls, [["sanity", { expire: 0 }]]);
+});
+
 test("missing or wrong signatures are refused without revalidating or echoing input", async () => {
   const wrong = await webhook.encodeSignatureHeader(body, Date.now(), "x".repeat(48));
   for (const headers of [{}, { [webhook.SIGNATURE_HEADER_NAME]: wrong }, { [webhook.SIGNATURE_HEADER_NAME]: "t=1,v1=garbage" }]) {
@@ -40,11 +53,18 @@ test("an unconfigured or weak secret disables the endpoint", async () => {
   assert.deepEqual(calls, []);
 });
 
-test("oversized bodies are refused before signature checks", async () => {
-  const large = JSON.stringify({ padding: "x".repeat(70_000) });
+test("oversized bodies are refused by byte size even without a content-length header", async () => {
+  const large = JSON.stringify({ padding: "é".repeat(35_000) });
   const signature = await webhook.encodeSignatureHeader(large, Date.now(), secret);
   const response = await route.POST(request({ [webhook.SIGNATURE_HEADER_NAME]: signature }, large));
   assert.equal(response.status, 413);
+  assert.deepEqual(calls, []);
+});
+
+test("requests without signatures are rejected without consuming their body", async () => {
+  const input = request({});
+  assert.equal((await route.POST(input)).status, 401);
+  assert.equal(input.bodyUsed, false);
   assert.deepEqual(calls, []);
 });
 

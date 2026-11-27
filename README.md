@@ -1,6 +1,6 @@
 # WOY Consulting - website
 
-A multi-page Next.js site (App Router, TypeScript, Tailwind v4). Case studies, people and documents are edited in Sanity (see `docs/editing-guide.md`); remaining copy lives in `lib/content.ts`; policy text lives in the two legal page files.
+A multi-page Next.js site (App Router, TypeScript, Tailwind v4). Case studies, people, documents, Expertise and Our approach copy are edited in Sanity (see `docs/editing-guide.md`). Policy text lives in the two legal page files.
 
 ```
 app/
@@ -48,8 +48,9 @@ With that production server running, use `npm run test:browser` for the route, a
 
 ## Deploy to Vercel
 
-Vercel auto-detects Next.js, so there is nothing to configure in the build
-settings. Import `ItsDee19/woy_consulting`, accept the defaults, and deploy.
+Connect `woyconsulting/woyconsulting` to the existing Vercel project for the public
+website. Use `main` as the production branch and the repository root for the
+Next.js build. Deploy Sanity Studio separately from `studio/`.
 
 Follow [the Vercel security setup](docs/security-deployment.md) and `.env.example` for direct Resend delivery (`RESEND_API_KEY`, `CONTACT_FROM_EMAIL`, `CONTACT_TO_EMAIL`), the signed-form secret, shared Redis limits and Turnstile verification. Verify the sender domain in Resend and redeploy after setting the environment variables. Production contact submissions fail closed without these controls. Rebuild after changing the public origin. Never commit populated environment files.
 
@@ -66,8 +67,8 @@ through a private channel rather than committing them.
 |---|---|
 | `/` | Plain light/dark hero, balanced animated brand mark and Growth / Excellence / Agility caption, positioning, compact expertise and delivery section, clients, interactive 4D approach and a founder-led leadership section |
 | `/about` | Concise firm introduction, logo philosophy, partnership principles and expandable client roster |
-| `/expertise` | Permanent redirect to the homepage’s `#expertise` section |
-| `/approach` | Interactive 4D journey, connected architectural planes and the ownership built into delivery |
+| `/expertise` | Four advisory areas and service lists, with page copy editable in Studio |
+| `/approach` | Four stages, working principles and logo philosophy, with page copy editable in Studio |
 | `/case-studies` | Featured engagement and outcome-led portfolio of six cases |
 | `/case-studies/[slug]` | Detail pages, generated from the case studies in Sanity |
 | `/practitioners` | Authentic portraits with monochrome/colour hover, experience highlights and expandable biographies |
@@ -84,13 +85,14 @@ all follow automatically.
 
 ## Content management (Sanity)
 
-Case studies, people and downloadable documents live in Sanity (project `hoks8t5u`, dataset `production`, public). WOY staff edit them in the hosted Studio, as described in [docs/editing-guide.md](docs/editing-guide.md). The site reads published content only.
+Case studies, people, downloadable documents and the two editable pages live in Sanity (project `hoks8t5u`, dataset `production`, public). WOY staff edit them in the hosted Studio, as described in [docs/editing-guide.md](docs/editing-guide.md). The site reads published content only. Expertise and Our approach show their existing copy until their Studio entries are first published.
 
 - **Studio:** `studio/` is a separate npm package. Run it locally with `cd studio && npm install && npm run dev` (http://localhost:3333) and publish it with `npx sanity deploy`.
 - **Snapshot:** `npm run cms:snapshot` saves every query result to `lib/cms/snapshot.generated.json` (git-ignored). `npm run dev` and `npm run build` run it first. A **build fails if Sanity is unreachable while the snapshot is taken**, so a deploy never ships without content and the current deployment stays live. At runtime, if Sanity is unreachable and nothing is cached, the site serves this snapshot (and logs `[cms] Sanity unreachable…`).
-- **Instant refresh:** publishing in Sanity calls a signed webhook, `POST https://<domain>/api/revalidate`. In Sanity (Manage → API → Webhooks) trigger it on Create, Update and Delete for `_type in ["caseStudy","person","resource"]`, dataset `production`, and give it the secret from `.env.local`. Create that secret with `npm run cms:secret` (written to `.env.local`, never printed) and paste the same value into the Sanity webhook and the Vercel project as `SANITY_REVALIDATE_SECRET`. `npm run cms:revalidate` sends a signed test request to a local server. Without the webhook the site still refreshes within 5 minutes.
+- **Instant refresh:** configure the signed webhook, `POST https://<domain>/api/revalidate`, for Create, Update and Delete on dataset `production`. Use filter `_type in ["caseStudy","person","resource","expertisePage","approachPage"]` and projection `{_id, _type}`, with draft events disabled. Set the same secret in Sanity and Vercel as `SANITY_REVALIDATE_SECRET`. Create a local secret with `npm run cms:secret` (written to `.env.local`, never printed). `npm run cms:revalidate` tests against the local server. Webhook signatures have a five-minute validity window. The website also revalidates CMS reads on its five-minute cache cycle.
 - **Environment:** `SANITY_PROJECT_ID` and `SANITY_DATASET` are optional overrides (the defaults are in `lib/sanity/project.mjs`). `SANITY_REVALIDATE_SECRET` is required in production and must be at least 32 characters.
-- **Uploads are public.** The dataset is public, so an uploaded file can be downloaded before it is published. Only upload material meant for the public.
+- **Public content only:** published documents are readable through the API, and uploaded files and images can be accessed by anyone with the URL, even before publish. Keep confidential material and private contact details in approved private storage. The website uses no Sanity write token.
+- **Project access:** review members, API tokens and credentialed CORS origins in Sanity Manage. On Free, only trusted owners should hold Administrator access and read-only users should be Viewers. Enable MFA on the sign-in accounts, retain only Studio origins that need credentials, and revoke obsolete tokens. Use Growth if regular publishers need an Editor role without project administration.
 - **Images and files** are served from this site's own origin under `/cms-assets/*`, a rewrite limited to this Sanity project and to safe file types, which keeps the Content-Security-Policy unchanged.
 - **Testing an outage:** build normally, then start with `CMS_TEST_UNREACHABLE=1 npm start`. The site should render identically from the snapshot.
 - **Visual checks:** `npm run test:visual:capture -- --label <name>` and `npm run test:visual:compare -- baseline <name>` compare screenshots of every route. Some pixel noise is normal on a busy machine, so re-capture once before treating a difference as real.
@@ -217,7 +219,7 @@ The following details require WOY’s production information.
 - **Case studies carry no client names.** Industry and scope of work only, per
   the NDA constraint. Names in the source deck were stripped.
 - **No awards or press section.** WOY positions through work and engagement.
-- **The Approach page is an interactive 4D journey**, with keyboard-accessible stage tabs, connected planes, stable detail panels and a readable no-JavaScript fallback.
+- **The Approach page** presents the four stages, working principles and WOY philosophy in fixed sections.
 - **Conversation CTAs open the Contact page.** Its form asks for name, email, optional organisation and a message, with required consent. The API sends enquiries through Resend after validation and anti-abuse checks. Direct email links remain available. The footer combines the closing invitation, company information, navigation and legal links.
 
 ## Accessibility and performance

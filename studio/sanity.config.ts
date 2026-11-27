@@ -11,4 +11,5 @@ export default defineConfig({
   dataset,
   plugins: [structureTool({ structure })],
   schema: { types: schemaTypes },
+  document: { singletons: ["expertisePage", "approachPage"] },
 });

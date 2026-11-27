@@ -16,7 +16,7 @@ export const resource = defineType({
     }),
     defineField({ name: "file", title: "File", type: "file", description: PUBLIC_UPLOAD_WARNING, options: { accept: ".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" }, validation: (rule) => rule.required() }),
     defineField({ name: "date", title: "Date", type: "date", initialValue: () => new Date().toISOString().slice(0, 10), validation: (rule) => rule.required() }),
-    defineField({ name: "coverImage", title: "Cover image (optional)", type: "image", options: { hotspot: true, accept: IMAGE_FORMATS } }),
+    defineField({ name: "coverImage", title: "Cover image (optional)", type: "image", description: PUBLIC_UPLOAD_WARNING, options: { hotspot: true, accept: IMAGE_FORMATS } }),
   ],
   preview: {
     select: { title: "title", category: "category", date: "date", media: "coverImage" },

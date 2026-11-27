@@ -16,7 +16,7 @@ const rules = [
   ["openai-project-key", /\bsk-(?:proj|svcacct)-[A-Za-z0-9_-]{40,}\b/g],
 ];
 const credentialAssignment = /\b(?:api[_-]?key|secret|password|token)\b\s*[:=]\s*["']([^"'\s]{24,})["']/gi;
-const browserServerConfig = /\b(?:RESEND_API_KEY|CONTACT_(?:FROM_EMAIL|TO_EMAIL|ENDPOINT(?:_TOKEN)?|FORM_SECRET|RATE_LIMIT_IP_HEADER)|UPSTASH_REDIS_REST_(?:URL|TOKEN)|TURNSTILE_SECRET_KEY)\b/g;
+const browserServerConfig = /\b(?:RESEND_API_KEY|CONTACT_(?:FROM_EMAIL|TO_EMAIL|ENDPOINT(?:_TOKEN)?|FORM_SECRET|RATE_LIMIT_IP_HEADER)|UPSTASH_REDIS_REST_(?:URL|TOKEN)|TURNSTILE_SECRET_KEY|SANITY_(?:AUTH_TOKEN|REVALIDATE_SECRET))\b/g;
 const examples = /^(?:docs|tests|fixtures|__fixtures__)\/|\/(?:fixtures|__fixtures__)\/|\.(?:md|mdx)$/i;
 const generated = /^(?:node_modules|\.git|\.next|reports|out|build)\//;
 

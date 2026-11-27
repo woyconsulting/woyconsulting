@@ -3,7 +3,7 @@
 You edit the website at **https://woy-consulting.sanity.studio**. Sign in with the email or Google account you were invited with.
 
 ## The golden rule
-**Anything you upload can be downloaded by anyone, even before you press Publish.** Never upload confidential client material, contracts or internal decks.
+Published entries can be read through Sanity’s public API. Draft text is restricted to authorised users, but photos and files can be downloaded by anyone who has the asset URL, even before you press Publish. Use Studio only for material approved for the public website. Keep confidential client material, contracts, internal decks, and private contact details in approved private storage.
 
 ## Changing a case study or a person
 1. Open **Case studies** or **People** in the left sidebar and click the entry.
@@ -14,6 +14,13 @@ You edit the website at **https://woy-consulting.sanity.studio**. Sign in with t
 Each case study also has a collapsed section, **Older case-study page (/case-studies)**. It controls the older page design. Leave its fields empty to reuse the main text automatically.
 
 Each person has a similar collapsed section for the older practitioners page. Its highlight box only appears when all three highlight fields are filled.
+
+## Changing Expertise or Our approach
+
+1. Open **Expertise** or **Our approach** in the Studio sidebar. Opening a new page entry pre-fills the current website wording.
+2. **Expertise** controls the introduction, four advisory areas, service lists, the label above example case studies, and the closing section.
+3. **Our approach** controls the introduction, four stages, working principles, and the detailed logo philosophy.
+4. Review the copy and press **Publish**. The site retains the existing layout, links and page addresses. The homepage sections have their own copy.
 
 ## Adding a document
 - **For the Resources page:** open **Resources**, click **+**, fill in the title, category and date, upload the file (PDF, Word, PowerPoint or Excel), then Publish.

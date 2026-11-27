@@ -49,7 +49,10 @@ test("Resend API credentials are detected without disclosing values or flagging 
 
 test("browser server-only configuration is blocked but legitimate server references are allowed", async () => {
   const { scanText } = await scanner;
-  for (const name of ["RESEND_API_KEY", "CONTACT_FROM_EMAIL", "CONTACT_TO_EMAIL", "CONTACT_ENDPOINT_TOKEN", "CONTACT_FORM_SECRET", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "TURNSTILE_SECRET_KEY"]) {
+  for (const name of [
+    "RESEND_API_KEY", "CONTACT_FROM_EMAIL", "CONTACT_TO_EMAIL", "CONTACT_ENDPOINT_TOKEN", "CONTACT_FORM_SECRET",
+    "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "TURNSTILE_SECRET_KEY", "SANITY_AUTH_TOKEN", "SANITY_REVALIDATE_SECRET",
+  ]) {
     const code = `const value = process.env.${name};`;
     assert.deepEqual(scanText(code), []);
     assert.equal(scanText(code, { browser: true })[0].category, "server-config-in-browser");
